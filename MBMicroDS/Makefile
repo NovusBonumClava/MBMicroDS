@@ -1,32 +1,18 @@
-ifneq ($(DEVKITPRO),)
-export DEVKITARM := $(DEVKITPRO)/devkitARM
-endif
-
-ifeq ($(strip $(DEVKITARM)),)
-$(error "Please set DEVKITARM in your environment")
-endif
-
-include $(DEVKITARM)/ds_rules
-
 TARGET   := MBMicroDS
 SOURCES  := source
 INCLUDES := include
 
 ARCH := -mthumb -mthumb-interwork
 
-CFLAGS := -g -Wall -O2 -march=armv5te -mtune=arm946e-s \
+CFLAGS := -g -Wall -O2 -mcpu=arm946e-s \
           -fomit-frame-pointer -ffast-math \
           $(ARCH) -I$(CURDIR)/include \
-          -I$(DEVKITPRO)/libnds/include \
-          -DARM9 -DNDS
+          -I/usr/include/nds \
+          -DARM9 -D__NDS__
 
-CXXFLAGS := $(CFLAGS) -fno-rtti -fno-exceptions
+LDFLAGS := -specs=ds_arm9.specs -g $(ARCH)
 
-LDFLAGS := -specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
-
-LIBS := -lnds9 -lfat
-
-LIBDIRS := $(DEVKITPRO)/libnds
+LIBS := -lnds9
 
 export OUTPUT := $(CURDIR)/$(TARGET)
 export VPATH := $(foreach dir,$(SOURCES),$(CURDIR)/$(dir))
@@ -36,8 +22,6 @@ CPPFILES := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 SFILES   := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 
 export OFILES := $(CFILES:.c=.o) $(CPPFILES:.cpp=.o) $(SFILES:.s=.o)
-
-export LIBPATHS := $(foreach dir,$(LIBDIRS),-L$(dir)/lib)
 
 .PHONY: all clean
 
@@ -50,7 +34,7 @@ $(OUTPUT).arm9: $(OUTPUT).elf
 	$(OBJCOPY) -O binary $< $@
 
 $(OUTPUT).elf: $(OFILES)
-	$(LD) $(LDFLAGS) $(OFILES) $(LIBPATHS) $(LIBS) -o $@
+	$(CC) $(CFLAGS) -Wl,-Map,$(notdir $*.map) $(OFILES) $(LIBS) -o $@
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -63,4 +47,3 @@ $(OUTPUT).elf: $(OFILES)
 
 clean:
 	rm -f $(OFILES) $(OUTPUT).elf $(OUTPUT).arm9 $(OUTPUT).nds
-
