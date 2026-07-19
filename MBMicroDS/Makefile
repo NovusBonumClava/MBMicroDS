@@ -2,6 +2,11 @@ TARGET   := MBMicroDS
 SOURCES  := source
 INCLUDES := include
 
+CC := arm-none-eabi-gcc
+AS := arm-none-eabi-as
+LD := arm-none-eabi-gcc
+OBJCOPY := arm-none-eabi-objcopy
+
 ARCH := -mthumb -mthumb-interwork
 
 CFLAGS := -g -Wall -O2 -mcpu=arm946e-s \
@@ -34,7 +39,7 @@ $(OUTPUT).arm9: $(OUTPUT).elf
 	$(OBJCOPY) -O binary $< $@
 
 $(OUTPUT).elf: $(OFILES)
-	$(CC) $(CFLAGS) -Wl,-Map,$(notdir $*.map) $(OFILES) $(LIBS) -o $@
+	$(LD) $(LDFLAGS) $(OFILES) $(LIBS) -o $@
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
