@@ -1,4 +1,4 @@
-name: Build MBMicroDS
+name: Build MBMicroDS (Native)
 
 on:
   push:
@@ -8,18 +8,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    container:
-      image: devkitpro/devkitarm:latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Install missing packages
+    - name: Install ARM toolchain and ndstool
       run: |
-        dkp-pacman -Syu --noconfirm
-        dkp-pacman -S calico --noconfirm
+        sudo apt-get update
+        sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi
+        sudo apt-get install -y libnds-dev
+        wget https://github.com/devkitPro/ndstool/releases/download/v2.1.2/ndstool-2.1.2-linux-amd64.zip
+        unzip ndstool-2.1.2-linux-amd64.zip
+        sudo mv ndstool /usr/local/bin/
+        sudo chmod +x /usr/local/bin/ndstool
 
     - name: Build
       run: |
