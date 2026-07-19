@@ -18,6 +18,8 @@ jobs:
 
     - name: Build
       run: |
+        cd MBMicroDS
+        ls -la
         make clean
         make
 
@@ -25,4 +27,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: MBMicroDS
-        path: MBMicroDS.nds
+        path: MBMicroDS/MBMicroDS.nds
