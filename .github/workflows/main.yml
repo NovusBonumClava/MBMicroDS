@@ -1,49 +1,28 @@
-name: Build MBMicroDS
+name: Build MBMicroDS (Docker)
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
     branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    container:
+      image: devkitpro/devkitarm:latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup devkitARM
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y wget unzip
-        wget https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-1.0.1/devkitpro-pacman-1.0.1-1-x86_64.pkg.tar.xz
-        sudo tar -xf devkitpro-pacman-1.0.1-1-x86_64.pkg.tar.xz -C /
-        sudo dkp-pacman -Syu --noconfirm
-        sudo dkp-pacman -S devkitARM nds-dev --noconfirm
-
-    - name: Set environment variables
-      run: |
-        echo "DEVKITPRO=/opt/devkitpro" >> $GITHUB_ENV
-        echo "DEVKITARM=/opt/devkitpro/devkitARM" >> $GITHUB_ENV
-
     - name: Build
       run: |
-        export DEVKITPRO=/opt/devkitpro
-        export DEVKITARM=/opt/devkitpro/devkitARM
         make clean
         make
 
-    - name: Upload .nds artifact
+    - name: Upload .nds
       uses: actions/upload-artifact@v4
       with:
         name: MBMicroDS
         path: MBMicroDS.nds
-
-    - name: Upload .elf artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: MBMicroDS-elf
-        path: MBMicroDS.elf
