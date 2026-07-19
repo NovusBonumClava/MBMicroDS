@@ -1,4 +1,4 @@
-name: Build MBMicroDS with BlocksDS
+name: Build MBMicroDS (Legacy)
 
 on:
   push:
@@ -8,25 +8,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    container:
+      image: devkitpro/devkitarm:20230608
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Install BlocksDS
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y wget unzip build-essential
-        wget https://github.com/blocksds/sdk/releases/download/v1.15.0/blocksds-linux.tar.xz
-        tar -xf blocksds-linux.tar.xz
-        sudo mv blocksds /opt/
-        echo "BLOCKSDS=/opt/blocksds" >> $GITHUB_ENV
-        echo "$PATH:/opt/blocksds/bin" >> $GITHUB_PATH
-
     - name: Build
       run: |
-        export BLOCKSDS=/opt/blocksds
-        export PATH=$PATH:/opt/blocksds/bin
         cd MBMicroDS
         make clean
         make
