@@ -1,4 +1,4 @@
-name: Build MBMicroDS
+name: Build MBMicroDS with BlocksDS
 
 on:
   push:
@@ -13,23 +13,23 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Install devkitPro
+    - name: Install BlocksDS
       run: |
         sudo apt-get update
-        sudo apt-get install -y wget unzip
-        wget https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-1.0.3/devkitpro-pacman-1.0.3-1-x86_64.pkg.tar.xz
-        sudo tar -xf devkitpro-pacman-1.0.3-1-x86_64.pkg.tar.xz -C /
-        sudo dkp-pacman -Syu --noconfirm
-        sudo dkp-pacman -S devkitARM nds-dev --noconfirm
+        sudo apt-get install -y wget unzip build-essential
+        wget https://github.com/blocksds/sdk/releases/latest/download/blocksds-linux.tar.xz
+        tar -xf blocksds-linux.tar.xz
+        sudo mv blocksds /opt/
+        echo "export BLOCKSDS=/opt/blocksds" >> $GITHUB_ENV
+        echo "export PATH=$PATH:/opt/blocksds/bin" >> $GITHUB_ENV
 
     - name: Build
       run: |
-        export DEVKITPRO=/opt/devkitpro
-        export DEVKITARM=/opt/devkitpro/devkitARM
-        export PATH=$PATH:/opt/devkitpro/tools/bin
+        export BLOCKSDS=/opt/blocksds
+        export PATH=$PATH:/opt/blocksds/bin
         cd MBMicroDS
-        make clean
-        make
+        make -f Makefile.blocksds clean
+        make -f Makefile.blocksds
 
     - name: Upload .nds
       uses: actions/upload-artifact@v4
