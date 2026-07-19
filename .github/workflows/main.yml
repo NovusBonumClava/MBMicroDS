@@ -17,19 +17,19 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y wget unzip build-essential
-        wget https://github.com/blocksds/sdk/releases/latest/download/blocksds-linux.tar.xz
+        wget https://github.com/blocksds/sdk/releases/download/v1.15.0/blocksds-linux.tar.xz
         tar -xf blocksds-linux.tar.xz
         sudo mv blocksds /opt/
-        echo "export BLOCKSDS=/opt/blocksds" >> $GITHUB_ENV
-        echo "export PATH=$PATH:/opt/blocksds/bin" >> $GITHUB_ENV
+        echo "BLOCKSDS=/opt/blocksds" >> $GITHUB_ENV
+        echo "$PATH:/opt/blocksds/bin" >> $GITHUB_PATH
 
     - name: Build
       run: |
         export BLOCKSDS=/opt/blocksds
         export PATH=$PATH:/opt/blocksds/bin
         cd MBMicroDS
-        make -f Makefile.blocksds clean
-        make -f Makefile.blocksds
+        make clean
+        make
 
     - name: Upload .nds
       uses: actions/upload-artifact@v4
