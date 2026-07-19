@@ -1,4 +1,4 @@
-name: Build MBMicroDS (Legacy)
+name: Build MBMicroDS (Ubuntu)
 
 on:
   push:
@@ -8,16 +8,25 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    container:
-      image: devkitpro/devkitarm:20230608
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Install devkitPro pacman
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget unzip
+        wget https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-1.0.3/devkitpro-pacman-1.0.3-1-x86_64.pkg.tar.xz
+        sudo tar -xf devkitpro-pacman-1.0.3-1-x86_64.pkg.tar.xz -C /
+        sudo dkp-pacman -Syu --noconfirm
+        sudo dkp-pacman -S devkitARM nds-dev calico --noconfirm
+
     - name: Build
       run: |
+        export DEVKITPRO=/opt/devkitpro
+        export DEVKITARM=/opt/devkitpro/devkitARM
+        export PATH=$PATH:/opt/devkitpro/tools/bin
         cd MBMicroDS
         make clean
         make
