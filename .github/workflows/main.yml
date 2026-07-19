@@ -8,18 +8,25 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    container:
-      image: devkitpro/devkitarm:latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Install devkitPro
+      run: |
+        wget https://apt.devkitpro.org/install-devkitpro-pacman
+        chmod +x ./install-devkitpro-pacman
+        sudo ./install-devkitpro-pacman
+        sudo dkp-pacman -Syu --noconfirm
+        sudo dkp-pacman -S devkitARM nds-dev calico --noconfirm
+
     - name: Build
       run: |
+        export DEVKITPRO=/opt/devkitpro
+        export DEVKITARM=/opt/devkitpro/devkitARM
+        export PATH=$PATH:/opt/devkitpro/tools/bin
         cd MBMicroDS
-        ls -la
         make clean
         make
 
