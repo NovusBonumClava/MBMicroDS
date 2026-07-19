@@ -16,12 +16,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Fix devkitPro packages
+    - name: Install missing packages
       run: |
-        pacman-key --init
-        pacman-key --populate
-        pacman -Syu --noconfirm
-        pacman -S calico libnds ndstool --noconfirm
+        dkp-pacman -Syu --noconfirm
+        dkp-pacman -S calico --noconfirm
 
     - name: Build
       run: |
