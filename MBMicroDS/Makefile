@@ -2,19 +2,19 @@ TARGET   := MBMicroDS
 SOURCES  := source
 INCLUDES := include
 
-CC := arm-none-eabi-gcc
-LD := arm-none-eabi-gcc
-OBJCOPY := arm-none-eabi-objcopy
+CC       := arm-none-eabi-gcc
+LD       := arm-none-eabi-gcc
+OBJCOPY  := arm-none-eabi-objcopy
 
-ARCH := -mthumb -mthumb-interwork
-CFLAGS := -g -Wall -O2 -mcpu=arm946e-s -fomit-frame-pointer -ffast-math \
-          $(ARCH) -I$(CURDIR)/include -I$(DEVKITPRO)/libnds/include \
-          -DARM9 -D__NDS__
-LDFLAGS := -specs=ds_arm9.specs -g $(ARCH)
-LIBS := -lnds9
+ARCH     := -mthumb -mthumb-interwork
+CFLAGS   := -g -Wall -O2 -mcpu=arm946e-s -fomit-frame-pointer -ffast-math \
+            $(ARCH) -I$(CURDIR)/include -I$(DEVKITPRO)/libnds/include \
+            -DARM9 -D__NDS__
+LDFLAGS  := -specs=ds_arm9.specs -g $(ARCH)
+LIBS     := -lnds9
 
-CFILES := $(wildcard $(SOURCES)/*.c)
-OFILES := $(CFILES:.c=.o)
+CFILES   := $(wildcard $(SOURCES)/*.c)
+OFILES   := $(CFILES:.c=.o)
 
 all: $(TARGET).nds
 
