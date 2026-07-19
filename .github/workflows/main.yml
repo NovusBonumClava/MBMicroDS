@@ -1,4 +1,4 @@
-name: Build MBMicroDS (Docker)
+name: Build MBMicroDS
 
 on:
   push:
@@ -8,24 +8,23 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    container:
+      image: devkitpro/devkitarm:latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Install devkitPro
+    - name: Fix devkitPro packages
       run: |
-        wget https://apt.devkitpro.org/install-devkitpro-pacman
-        chmod +x ./install-devkitpro-pacman
-        sudo ./install-devkitpro-pacman
-        sudo dkp-pacman -Syu --noconfirm
-        sudo dkp-pacman -S devkitARM nds-dev calico --noconfirm
+        pacman-key --init
+        pacman-key --populate
+        pacman -Syu --noconfirm
+        pacman -S calico libnds ndstool --noconfirm
 
     - name: Build
       run: |
-        export DEVKITPRO=/opt/devkitpro
-        export DEVKITARM=/opt/devkitpro/devkitARM
-        export PATH=$PATH:/opt/devkitpro/tools/bin
         cd MBMicroDS
         make clean
         make
